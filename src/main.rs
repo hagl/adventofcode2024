@@ -7,6 +7,8 @@ mod day06;
 mod day07;
 mod day08;
 mod day09;
+mod day10;
+mod grid;
 
 #[derive(Parser, Debug)]
 #[clap(author = "Harald Gliebe", version, about)]
@@ -31,11 +33,12 @@ fn main() {
         args.name.unwrap_or("world".to_string())
     );
 
-    println!("Day03\n{}\n", day03::solve());
-    println!("Day04\n{}\n", day04::solve());
-    println!("Day05\n{}\n", day05::solve());
-    println!("Day06\n{}\n", day06::solve());
-    println!("Day07\n{}\n", day07::solve());
-    println!("Day08\n{}\n", day08::solve());
-    println!("Day09\n{}\n", day09::solve());
+    // println!("Day03\n{}\n", day03::solve());
+    // println!("Day04\n{}\n", day04::solve());
+    // println!("Day05\n{}\n", day05::solve());
+    // println!("Day06\n{}\n", day06::solve());
+    // println!("Day07\n{}\n", day07::solve());
+    // println!("Day08\n{}\n", day08::solve());
+    // println!("Day09\n{}\n", day09::solve());
+    println!("Day10\n{}\n", day10::solve());
 }

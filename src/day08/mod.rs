@@ -69,14 +69,12 @@ pub fn solve() -> String {
     let height = array.len();
     let width = array[0].len();
     // find start position
-    let mut sx: i32 = -1;
-    let mut sy: i32 = -1;
 
     for x in 0..width {
         for y in 0..height {
             let line = &array[y];
             let c = line[x];
-            if (c != '.') {
+            if c != '.' {
                 antenas
                     .entry(c)
                     .or_insert(vec![])

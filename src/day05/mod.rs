@@ -43,7 +43,7 @@ fn task1(rules: &[String], updates: &[String]) -> (i64, i64) {
                 let mid = values[len / 2].parse::<i64>().unwrap();
                 result += mid;
             } else {
-                let sorted = sortLine(rules, &values);
+                let sorted = sort_line(rules, &values);
                 let mid = sorted[len / 2].parse::<i64>().unwrap();
                 result2 += mid;
             }
@@ -52,7 +52,7 @@ fn task1(rules: &[String], updates: &[String]) -> (i64, i64) {
     (result, result2)
 }
 
-fn sortLine(rules: &[String], values: &Vec<String>) -> Vec<String> {
+fn sort_line(rules: &[String], values: &Vec<String>) -> Vec<String> {
     let mut res = values.clone();
     res.sort_by(|a, b| {
         if rules.contains(&format!("{}|{}", a, b)) {

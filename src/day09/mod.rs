@@ -31,18 +31,18 @@ fn task1(array: &Vec<DiskSection>) -> i64 {
     let mut end: usize = array.len();
     let mut acc: i64 = 0;
     let mut last: Option<(i64, i64)> = None;
-    let mut lastStart = 0;
+    let mut last_start = 0;
     while i < end {
         let current = &array[i];
         i += 1;
         match current {
             DiskSection::File { id, start, length } => {
                 acc += checksum(*id, *start, *length);
-                lastStart = start + length;
+                last_start = start + length;
             }
             DiskSection::Free { start, length } => {
                 let mut start = *start;
-                lastStart = start;
+                last_start = start;
                 let mut rest: i64 = *length;
                 while rest > 0 && (last.is_some() || end > i) {
                     if let Some((last_id, last_length)) = last {
@@ -50,19 +50,19 @@ fn task1(array: &Vec<DiskSection>) -> i64 {
                             acc += checksum(last_id, start, rest);
                             last = None;
                             start = start + rest;
-                            lastStart = start;
+                            last_start = start;
                             rest = 0;
                         } else if last_length > rest {
                             acc += checksum(last_id, start, rest);
                             last = Some((last_id, last_length - rest));
                             start += rest;
-                            lastStart = start;
+                            last_start = start;
                             rest = 0;
                         } else {
                             acc += checksum(last_id, start, last_length);
                             last = None;
                             start += last_length;
-                            lastStart = start;
+                            last_start = start;
                             rest = rest - last_length;
                         }
                     } else {
@@ -86,7 +86,7 @@ fn task1(array: &Vec<DiskSection>) -> i64 {
         }
     }
     if let Some((last_id, last_length)) = last {
-        acc += checksum(last_id, lastStart, last_length);
+        acc += checksum(last_id, last_start, last_length);
     }
     acc
 }
