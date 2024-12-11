@@ -1,44 +1,42 @@
 use std::collections::HashMap;
 use std::fs;
 
-use num::{BigInt, FromPrimitive};
-
 fn task1(stones: &Vec<i64>) -> usize {
-    let mut cache: HashMap<(BigInt, usize), usize> = HashMap::new();
-    stones
-        .iter()
-        .map(|n| count(BigInt::from_i64(*n).unwrap(), 25, &mut cache))
-        .sum()
+    let mut cache: HashMap<(i64, usize), usize> = HashMap::new();
+    stones.iter().map(|n| count(*n, 25, &mut cache)).sum()
 }
 fn task2(stones: &Vec<i64>) -> usize {
-    let mut cache: HashMap<(BigInt, usize), usize> = HashMap::new();
-    stones
-        .iter()
-        .map(|n| count(BigInt::from_i64(*n).unwrap(), 75, &mut cache))
-        .sum()
+    let mut cache: HashMap<(i64, usize), usize> = HashMap::new();
+    stones.iter().map(|n| count(*n, 75, &mut cache)).sum()
 }
 
-fn count(b: BigInt, steps: usize, cache: &mut HashMap<(BigInt, usize), usize>) -> usize {
-    if let Some(v) = cache.get(&(b.clone(), steps)) {
+fn num_digits(n: i64) -> u32 {
+    let mut n = n;
+    let mut c = 0;
+    while n != 0 {
+        n = n / 10;
+        c += 1;
+    }
+    c
+}
+
+fn count(b: i64, steps: usize, cache: &mut HashMap<(i64, usize), usize>) -> usize {
+    if let Some(v) = cache.get(&(b, steps)) {
         *v
     } else {
         if steps == 0 {
             1
         } else {
-            let res = if b == BigInt::ZERO {
-                count(BigInt::from(1), steps - 1, cache)
+            let res = if b == 0 {
+                count(1, steps - 1, cache)
             } else {
-                let digits = b.to_string();
-                if digits.len() % 2 == 0 {
-                    count(
-                        digits[0..(digits.len() / 2)].parse().unwrap(),
-                        steps - 1,
-                        cache,
-                    ) + count(
-                        digits[(digits.len() / 2)..].parse().unwrap(),
-                        steps - 1,
-                        cache,
-                    )
+                let nd = num_digits(b);
+                if nd % 2 == 0 {
+                    let base: i64 = 10;
+                    let d = base.pow(nd / 2);
+                    let prefix = b / d;
+                    let postfix = b % d;
+                    count(prefix, steps - 1, cache) + count(postfix, steps - 1, cache)
                 } else {
                     count(b.clone() * 2024, steps - 1, cache)
                 }
