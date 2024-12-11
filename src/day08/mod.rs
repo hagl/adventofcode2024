@@ -57,8 +57,8 @@ fn task1(antenas: &HashMap<char, Vec<(i32, i32)>>, width: usize, height: usize) 
 
 pub fn solve() -> String {
     let contents =
-        fs::read_to_string("data/day08/input.txt").expect("Should have been able to read the file");
-    // fs::read_to_string("data/day08/ex.txt").expect("Should have been able to read the file");
+        fs::read_to_string("data/day08/input.txt").unwrap();
+    // fs::read_to_string("data/day08/ex.txt").unwrap();
     let mut antenas: HashMap<char, Vec<(i32, i32)>> = HashMap::new();
     let array: Vec<Vec<char>> = contents
         .split("\n")

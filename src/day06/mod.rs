@@ -94,9 +94,8 @@ fn check_loop(
 }
 
 pub fn solve() -> String {
-    let contents =
-        fs::read_to_string("data/day06/input.txt").expect("Should have been able to read the file");
-    // fs::read_to_string("data/day06/ex.txt").expect("Should have been able to read the file");
+    let contents = fs::read_to_string("data/day06/input.txt").unwrap();
+    // fs::read_to_string("data/day06/ex.txt").unwrap();
     let grid = Grid::from_str(&contents);
     format!("Task1: {},\nTask2: {}", task1(&grid), task2(&grid))
 }

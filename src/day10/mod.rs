@@ -75,8 +75,8 @@ fn get_trail_ends_count(map: &Grid, trailhead: (usize, usize)) -> HashMap<(usize
 
 pub fn solve() -> String {
     let contents =
-        fs::read_to_string("data/day10/input.txt").expect("Should have been able to read the file");
-    // fs::read_to_string("data/day10/ex1.txt").expect("Should have been able to read the file");
+        fs::read_to_string("data/day10/input.txt").unwrap();
+    // fs::read_to_string("data/day10/ex1.txt").unwrap();
 
     let grid: Grid = Grid::from_str(&contents);
     format!("Task1: {},\nTask2: {}", task1(&grid), task2(&grid))

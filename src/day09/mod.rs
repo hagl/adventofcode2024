@@ -156,8 +156,8 @@ fn task2(array: &Vec<DiskSection>) -> i64 {
 
 pub fn solve() -> String {
     let contents =
-        fs::read_to_string("data/day09/input.txt").expect("Should have been able to read the file");
-    // fs::read_to_string("data/day09/ex.txt").expect("Should have been able to read the file");
+        fs::read_to_string("data/day09/input.txt").unwrap();
+    // fs::read_to_string("data/day09/ex.txt").unwrap();
     // let mut result: Vec<DiskSection> = vec![];
     let array: Vec<DiskSection> = contents
         .split("\n")

@@ -65,8 +65,8 @@ fn task2(lines: &Vec<Line>) -> i64 {
 
 pub fn solve() -> String {
     let contents =
-        fs::read_to_string("data/day07/input.txt").expect("Should have been able to read the file");
-    // fs::read_to_string("data/day07/ex.txt").expect("Should have been able to read the file");
+        fs::read_to_string("data/day07/input.txt").unwrap();
+    // fs::read_to_string("data/day07/ex.txt").unwrap();
     let lines: Vec<Line> = contents
         .split("\n")
         .map(|s| s.to_string())

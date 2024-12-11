@@ -68,8 +68,8 @@ fn sort_line(rules: &[String], values: &Vec<String>) -> Vec<String> {
 
 pub fn solve() -> String {
     let contents =
-        // fs::read_to_string("data/day05/ex.txt").expect("Should have been able to read the file");
-    fs::read_to_string("data/day05/input.txt").expect("Should have been able to read the file");
+        // fs::read_to_string("data/day05/ex.txt").unwrap();
+    fs::read_to_string("data/day05/input.txt").unwrap();
 
     let lines: Vec<String> = contents.split("\n").map(|s| s.to_string()).collect();
     let index = lines.iter().position(|r| r.is_empty()).unwrap();

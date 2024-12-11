@@ -37,7 +37,7 @@ fn task2(input: &str) -> Result<i64, ParseIntError> {
 
 pub fn solve() -> String {
     let contents =
-        fs::read_to_string("data/day03/input.txt").expect("Should have been able to read the file");
+        fs::read_to_string("data/day03/input.txt").unwrap();
 
     let prod = task1(&contents).unwrap();
     let prod2 = task2(&contents).unwrap();
