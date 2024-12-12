@@ -4,49 +4,49 @@ use std::fs;
 use crate::grid::{Direction, Grid, Point};
 
 fn task1(map: &Grid) -> usize {
-    let mut todo: Vec<Point> = vec![Point { x: 0, y: 0 }];
     let mut processed: HashSet<Point> = HashSet::new();
-    let mut acc = 0;
-    while let Some(start) = todo.pop() {
-        let value = map.get_point(start).unwrap();
-        if processed.insert(start) {
-            let (area, border) = find_area(
-                map,
-                start,
-                value,
-                &mut todo,
-                &mut processed,
-                &mut HashSet::new(),
-                &mut HashSet::new(),
-            );
-            acc += area * border;
-        }
-    }
-    acc
+    map.iter()
+        .map(|start| {
+            if processed.insert(start) {
+                let value = map.get_point(start).unwrap();
+                let (area, border) = find_area(
+                    map,
+                    start,
+                    value,
+                    &mut processed,
+                    &mut HashSet::new(),
+                    &mut HashSet::new(),
+                );
+                area * border
+            } else {
+                0
+            }
+        })
+        .sum()
 }
 
 fn task2(map: &Grid) -> usize {
-    let mut todo: Vec<Point> = vec![Point { x: 0, y: 0 }];
     let mut processed: HashSet<Point> = HashSet::new();
-    let mut acc = 0;
-    while let Some(start) = todo.pop() {
-        let value = map.get_point(start).unwrap();
-        let mut borders: HashSet<(Point, Direction)> = HashSet::new();
-        if processed.insert(start) {
-            let (area, _) = find_area(
-                map,
-                start,
-                value,
-                &mut todo,
-                &mut processed,
-                &mut HashSet::new(),
-                &mut borders,
-            );
-            let border_count = find_borders(map, &mut borders);
-            acc += area * border_count;
-        }
-    }
-    acc
+    map.iter()
+        .map(|start| {
+            if processed.insert(start) {
+                let value = map.get_point(start).unwrap();
+                let mut borders: HashSet<(Point, Direction)> = HashSet::new();
+                let (area, _) = find_area(
+                    map,
+                    start,
+                    value,
+                    &mut processed,
+                    &mut HashSet::new(),
+                    &mut borders,
+                );
+                let border_count = find_borders(map, &mut borders);
+                area * border_count
+            } else {
+                0
+            }
+        })
+        .sum()
 }
 
 fn extend_border(
@@ -89,7 +89,6 @@ fn find_area(
     map: &Grid,
     p: Point,
     value: char,
-    todo: &mut Vec<Point>,
     processed: &mut HashSet<Point>,
     local_processed: &mut HashSet<Point>,
     borders: &mut HashSet<(Point, Direction)>,
@@ -103,12 +102,10 @@ fn find_area(
             if !local_processed.contains(&np) {
                 if let Some(nv) = map.get_point(np) {
                     if nv == value {
-                        let (na, nb) =
-                            find_area(map, np, nv, todo, processed, local_processed, borders);
+                        let (na, nb) = find_area(map, np, nv, processed, local_processed, borders);
                         area += na;
                         border += nb;
                     } else {
-                        todo.push(np);
                         border += 1;
                         borders.insert((p, d));
                     }

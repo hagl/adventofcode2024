@@ -40,7 +40,39 @@ pub struct Grid {
     pub height: usize,
 }
 
+struct GridIterator {
+    width: usize,
+    height: usize,
+    current: Point,
+}
+
+impl Iterator for GridIterator {
+    type Item = Point;
+    fn next(&mut self) -> Option<Point> {
+        let Point { x, y } = self.current;
+        if x < self.width - 1 {
+            self.current = Point { x: x + 1, y };
+            Some(self.current)
+        } else {
+            if y < self.height - 1 {
+                self.current = Point { x: 0, y: y + 1 };
+                Some(self.current)
+            } else {
+                None
+            }
+        }
+    }
+}
+
 impl Grid {
+    pub fn iter(self: &Grid) -> impl Iterator<Item = Point> {
+        GridIterator {
+            width: self.width,
+            height: self.height,
+            current: Point { x: 0, y: 0 },
+        }
+    }
+
     pub fn from_str(s: &str) -> Grid {
         let array: Vec<Vec<char>> = s
             .split("\n")
