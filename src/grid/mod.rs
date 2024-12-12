@@ -28,6 +28,12 @@ impl Direction {
     }
 }
 
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
+pub struct Point {
+    pub x: usize,
+    pub y: usize,
+}
+
 pub struct Grid {
     array: Vec<Vec<char>>,
     pub width: usize,
@@ -54,44 +60,57 @@ impl Grid {
     }
 
     pub fn get(self: &Grid, (x, y): (usize, usize)) -> Option<char> {
+        self.get_point(Point { x, y })
+    }
+
+    pub fn get_point(self: &Grid, Point { x, y }: Point) -> Option<char> {
         let line = self.array.get(usize::try_from(y).ok()?)?;
         line.get(usize::try_from(x).ok()?).copied()
     }
 
-    pub fn pos_in_direction(
+    pub fn point_in_direction(
         self: &Grid,
-        (x, y): (usize, usize),
-        dir: &Direction,
-    ) -> Option<(usize, usize)> {
+        Point { x, y }: Point,
+        dir: Direction,
+    ) -> Option<(Point)> {
         match dir {
             Direction::Up => {
                 if y > 0 {
-                    Some((x, y - 1))
+                    Some(Point { x, y: y - 1 })
                 } else {
                     None
                 }
             }
             Direction::Right => {
                 if x + 1 < self.width {
-                    Some((x + 1, y))
+                    Some(Point { x: x + 1, y })
                 } else {
                     None
                 }
             }
             Direction::Down => {
                 if y + 1 < self.height {
-                    Some((x, y + 1))
+                    Some(Point { x, y: y + 1 })
                 } else {
                     None
                 }
             }
             Direction::Left => {
                 if x > 0 {
-                    Some((x - 1, y))
+                    Some(Point { x: x - 1, y })
                 } else {
                     None
                 }
             }
         }
+    }
+
+    pub fn pos_in_direction(
+        self: &Grid,
+        (x, y): (usize, usize),
+        dir: Direction,
+    ) -> Option<(usize, usize)> {
+        self.point_in_direction(Point { x, y }, dir)
+            .map(|p| (p.x, p.y))
     }
 }

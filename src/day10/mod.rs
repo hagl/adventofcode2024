@@ -30,7 +30,7 @@ fn get_trail_ends(map: &Grid, trailhead: &(usize, usize)) -> HashSet<(usize, usi
         let mut new_positions: HashSet<(usize, usize)> = HashSet::new();
         for (x, y) in positions {
             for d in Direction::VALUES {
-                if let Some(pos) = map.pos_in_direction((x, y), &d) {
+                if let Some(pos) = map.pos_in_direction((x, y), d) {
                     if map.get(pos) == Some(i) {
                         new_positions.insert(pos);
                     }
@@ -60,7 +60,7 @@ fn get_trail_ends_count(map: &Grid, trailhead: (usize, usize)) -> HashMap<(usize
         let mut new_positions: HashMap<(usize, usize), usize> = HashMap::new();
         for ((x, y), count) in positions {
             for d in Direction::VALUES {
-                if let Some(pos) = map.pos_in_direction((x, y), &d) {
+                if let Some(pos) = map.pos_in_direction((x, y), d) {
                     if map.get(pos) == Some(i) {
                         let entry = new_positions.entry(pos).or_insert(0);
                         *entry += count;
@@ -74,8 +74,7 @@ fn get_trail_ends_count(map: &Grid, trailhead: (usize, usize)) -> HashMap<(usize
 }
 
 pub fn solve() -> String {
-    let contents =
-        fs::read_to_string("data/day10/input.txt").unwrap();
+    let contents = fs::read_to_string("data/day10/input.txt").unwrap();
     // fs::read_to_string("data/day10/ex1.txt").unwrap();
 
     let grid: Grid = Grid::from_str(&contents);

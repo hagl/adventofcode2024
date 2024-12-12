@@ -24,7 +24,7 @@ fn task1(input: &Grid) -> usize {
     visited.insert(p);
     let mut dir = Direction::Up;
     loop {
-        if let Some(np) = input.pos_in_direction(p, &dir) {
+        if let Some(np) = input.pos_in_direction(p, dir) {
             if input.get(np).unwrap() == '#' {
                 dir = dir.right();
             } else {
@@ -50,7 +50,7 @@ fn task2(input: &Grid) -> usize {
     let mut count = 0;
 
     loop {
-        if let Some(np) = input.pos_in_direction(pos, &dir) {
+        if let Some(np) = input.pos_in_direction(pos, dir) {
             if input.get(np).unwrap() == '#' {
                 dir = dir.right();
             } else {
@@ -78,7 +78,7 @@ fn check_loop(
 ) -> bool {
     visited.insert((pos, dir));
     loop {
-        if let Some(np) = input.pos_in_direction(pos, &dir) {
+        if let Some(np) = input.pos_in_direction(pos, dir) {
             if input.get(np).unwrap() == '#' || np == blocked {
                 dir = dir.right();
             } else {
