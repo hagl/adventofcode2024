@@ -1,6 +1,3 @@
-use num::integer::gcd;
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 
 #[derive(Debug)]
@@ -138,7 +135,7 @@ fn task2(array: &Vec<DiskSection>) -> i64 {
                     start: free_start,
                     length: free_length,
                 }) => {
-                    if (start < *free_start) {
+                    if start < *free_start {
                         limit = length;
                         acc += checksum(id, start, length);
                     } else {
@@ -155,8 +152,7 @@ fn task2(array: &Vec<DiskSection>) -> i64 {
 }
 
 pub fn solve() -> String {
-    let contents =
-        fs::read_to_string("data/day09/input.txt").unwrap();
+    let contents = fs::read_to_string("data/day09/input.txt").unwrap();
     // fs::read_to_string("data/day09/ex.txt").unwrap();
     // let mut result: Vec<DiskSection> = vec![];
     let array: Vec<DiskSection> = contents

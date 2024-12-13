@@ -1,27 +1,5 @@
 use core::cmp::Ordering::*;
 use std::fs;
-fn get(input: &Vec<Vec<char>>, x: i32, y: i32) -> Option<&char> {
-    if x < 0 || y < 0 {
-        None
-    } else {
-        let line = input.get(usize::try_from(y).ok()?)?;
-        line.get(usize::try_from(x).ok()?)
-    }
-}
-
-fn check(input: &Vec<Vec<char>>, x: i32, y: i32, dx: i32, dy: i32) -> bool {
-    let f = || -> Option<bool> {
-        Some(
-            *(get(input, x, y)?) == 'X'
-                && *(get(input, x + dx, y + dy)?) == 'M'
-                && *(get(input, x + dx + dx, y + dy + dy)?) == 'A'
-                && *(get(input, x + dx + dx + dx, y + dy + dy + dy)?) == 'S',
-        )
-    };
-    let res = f().unwrap_or(false);
-    // println!("{},{}  {},{} -> {}", x, y, dx, dy, res);
-    res
-}
 
 fn task1(rules: &[String], updates: &[String]) -> (i64, i64) {
     let mut result = 0;

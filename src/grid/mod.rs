@@ -100,11 +100,7 @@ impl Grid {
         line.get(usize::try_from(x).ok()?).copied()
     }
 
-    pub fn point_in_direction(
-        self: &Grid,
-        Point { x, y }: Point,
-        dir: Direction,
-    ) -> Option<(Point)> {
+    pub fn point_in_direction(self: &Grid, Point { x, y }: Point, dir: Direction) -> Option<Point> {
         match dir {
             Direction::Up => {
                 if y > 0 {

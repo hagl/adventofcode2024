@@ -1,18 +1,8 @@
-use std::collections::HashSet;
 use std::fs;
 #[derive(PartialEq, Eq, Hash, Clone)]
 struct Line {
     res: i64,
     numbers: Vec<i64>,
-}
-
-fn get(input: &Vec<Vec<char>>, x: i32, y: i32) -> Option<&char> {
-    if x < 0 || y < 0 {
-        None
-    } else {
-        let line = input.get(usize::try_from(y).ok()?)?;
-        line.get(usize::try_from(x).ok()?)
-    }
 }
 
 fn task1(lines: &Vec<Line>) -> i64 {
@@ -64,8 +54,7 @@ fn task2(lines: &Vec<Line>) -> i64 {
 }
 
 pub fn solve() -> String {
-    let contents =
-        fs::read_to_string("data/day07/input.txt").unwrap();
+    let contents = fs::read_to_string("data/day07/input.txt").unwrap();
     // fs::read_to_string("data/day07/ex.txt").unwrap();
     let lines: Vec<Line> = contents
         .split("\n")
