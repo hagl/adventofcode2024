@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::hash::Hash;
 
-use crate::grid::{self, Direction, Grid, Point};
+use crate::grid::{Direction, Grid, Point};
 
 fn pop<T>(set: &mut HashSet<T>) -> Option<T>
 where
@@ -104,7 +104,6 @@ fn task2(map: &mut Grid) -> usize {
         .map(|dir| (end, *dir, minimum))
         .collect();
     on_path.insert(end);
-    println!("{:?}", todo);
     while let Some((pos, dir, score)) = pop(&mut todo) {
         if let Some(prev_pos) = map.point_in_direction(pos, dir.left().left()) {
             is_on_path(&minimums, &mut on_path, &mut todo, prev_pos, dir, score - 1);

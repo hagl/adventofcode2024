@@ -1,15 +1,14 @@
-use std::fs;
+use std::{fs, usize};
 
 use nom::{
-    bytes::complete::tag,
-    character::complete::newline,
-    multi::{many0, many1},
-    sequence::tuple,
-    IResult, Parser,
+    bytes::complete::tag, character::complete::newline, multi::many1, sequence::tuple, IResult,
 };
 
-fn task1(robots: &Vec<Robot>, (w, h): (i32, i32)) -> usize {
-    let steps = 100;
+fn task1(robots: &Vec<Robot>, d: (i32, i32)) -> usize {
+    move_steps(robots, d, 100).0
+}
+
+fn move_steps(robots: &Vec<Robot>, (w, h): (i32, i32), steps: i32) -> (usize, Vec<(i32, i32)>) {
     let positions: Vec<(i32, i32)> = robots
         .iter()
         .map(
@@ -20,48 +19,40 @@ fn task1(robots: &Vec<Robot>, (w, h): (i32, i32)) -> usize {
         )
         .map(|(x, y)| (if x < 0 { x + w } else { x }, if y < 0 { y + h } else { y }))
         .collect();
-    println!("After {} steps: {:?}", steps, positions);
     let mx = w / 2;
     let my: i32 = h / 2;
     let q1 = positions.iter().filter(|(x, y)| *x < mx && *y < my).count();
     let q2 = positions.iter().filter(|(x, y)| *x < mx && *y > my).count();
     let q3 = positions.iter().filter(|(x, y)| *x > mx && *y < my).count();
     let q4 = positions.iter().filter(|(x, y)| *x > mx && *y > my).count();
-    println!("{} {} {} {}", q1, q2, q3, q4);
-    q1 * q2 * q3 * q4
+    (q1 * q2 * q3 * q4, positions)
 }
 
-fn task2(robots: &Vec<Robot>, (w, h): (i32, i32)) -> usize {
-    for steps in 0..=(w * h) {
-        let positions: Vec<(i32, i32)> = robots
-            .iter()
-            .map(
-                |Robot {
-                     pos: (x, y),
-                     vel: (vx, vy),
-                 }| ((x + steps * vx) % w, (y + steps * vy) % h),
-            )
-            .map(|(x, y)| (if x < 0 { x + w } else { x }, if y < 0 { y + h } else { y }))
-            .collect();
-        let mx = w / 2;
-        let my: i32 = h / 2;
-        let q1 = positions.iter().filter(|(x, y)| *x < mx).count();
-        if (q1 > 300) {
-            println!("Step: {:?}", steps);
+fn task2(robots: &Vec<Robot>, (w, h): (i32, i32)) -> i32 {
+    let mut min_score = usize::MAX;
+    let mut min_steps = i32::MAX;
+    let mut min_positions: Vec<(i32, i32)> = vec![];
 
-            for y in 0..w {
-                for x in 0..h {
-                    if positions.contains(&(x, y)) {
-                        print!("█");
-                    } else {
-                        print!(" ");
-                    }
-                }
-                println!();
-            }
+    for steps in 0..(w * h) {
+        let (score, positions) = move_steps(robots, (w, h), steps);
+        if score < min_score {
+            min_score = score;
+            min_steps = steps;
+            min_positions = positions;
         }
     }
-    0
+
+    for y in 0..w {
+        for x in 0..h {
+            if min_positions.contains(&(x, y)) {
+                print!("█");
+            } else {
+                print!(" ");
+            }
+        }
+        println!();
+    }
+    min_steps
 }
 
 #[derive(Debug, PartialEq)]
@@ -69,8 +60,6 @@ struct Robot {
     pos: (i32, i32),
     vel: (i32, i32),
 }
-
-//p=9,5 v=-3,-3
 
 fn robot(input: &str) -> IResult<&str, Robot> {
     let (input, (_, pos_x, _, pos_y, _, vel_x, _, vel_y, _)) = tuple((
@@ -103,7 +92,7 @@ pub fn solve() -> String {
 
     let (rest, robots): (&str, Vec<Robot>) = robots(&contents).unwrap();
 
-    println!("{:?}", robots);
+    // println!("{:?}", robots);
     assert_eq!(rest, "");
 
     format!(

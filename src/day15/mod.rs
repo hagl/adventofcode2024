@@ -60,7 +60,7 @@ fn task2(map: &mut Grid, moves: &str) -> usize {
         .find(|p| map.get_point(*p).unwrap() == '@')
         .unwrap();
     map.set_point(pos, '.');
-    println!("Map: \n{}\n\n", map.to_string());
+    // println!("Map: \n{}\n\n", map.to_string());
 
     for c in moves.chars() {
         let dir = Direction::from_char(c);
@@ -106,7 +106,7 @@ fn collect_changes(
         ']' => {
             let next_pos = map.point_in_direction(pos, dir).unwrap();
             changes.push((next_pos, ']'));
-            if (dir == Direction::Left || dir == Direction::Right) {
+            if dir == Direction::Left || dir == Direction::Right {
                 collect_changes(map, changes, next_pos, dir)
             } else {
                 // move other part of the box too
@@ -118,8 +118,7 @@ fn collect_changes(
                     && collect_changes(map, changes, next_left_pos, dir)
             }
         }
-        c => {
-            println!("c = {}", c);
+        _ => {
             todo!()
         }
     }
@@ -153,7 +152,6 @@ pub fn solve() -> String {
             acc
         });
 
-    println!("{:?} \n\n {}", grid2, moves);
     format!(
         "Task1: {},\nTask2: {}",
         task1(&mut grid, &moves),
