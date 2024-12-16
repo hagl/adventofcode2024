@@ -9,6 +9,16 @@ pub enum Direction {
 impl Direction {
     pub const VALUES: [Self; 4] = [Self::Up, Self::Right, Self::Down, Self::Left];
 
+    pub fn from_char(c: char) -> Direction {
+        match c {
+            '<' => Direction::Left,
+            '^' => Direction::Up,
+            '>' => Direction::Right,
+            'v' => Direction::Down,
+            _ => todo!(),
+        }
+    }
+
     pub fn right(self: &Direction) -> Direction {
         match self {
             Direction::Up => Direction::Right,
@@ -34,6 +44,7 @@ pub struct Point {
     pub y: usize,
 }
 
+#[derive(Clone, Debug)]
 pub struct Grid {
     array: Vec<Vec<char>>,
     pub width: usize,
@@ -96,8 +107,13 @@ impl Grid {
     }
 
     pub fn get_point(self: &Grid, Point { x, y }: Point) -> Option<char> {
-        let line = self.array.get(usize::try_from(y).ok()?)?;
+        let line = self.array.get(y)?;
         line.get(usize::try_from(x).ok()?).copied()
+    }
+
+    pub fn set_point(self: &mut Grid, Point { x, y }: Point, c: char) {
+        let line = &mut self.array[y];
+        line[x] = c;
     }
 
     pub fn point_in_direction(self: &Grid, Point { x, y }: Point, dir: Direction) -> Option<Point> {
@@ -140,5 +156,31 @@ impl Grid {
     ) -> Option<(usize, usize)> {
         self.point_in_direction(Point { x, y }, dir)
             .map(|p| (p.x, p.y))
+    }
+
+    pub fn to_string(self: &Grid) -> String {
+        let mut result = "".to_string();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                result.push(self.get((x, y)).unwrap());
+            }
+            result.push('\n');
+        }
+        result
+    }
+
+    pub fn to_string2(self: &Grid, Point { x: x0, y: y0 }: Point, c: char) -> String {
+        let mut result = "".to_string();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                if (x == x0 && y == y0) {
+                    result.push(c);
+                } else {
+                    result.push(self.get((x, y)).unwrap());
+                }
+            }
+            result.push('\n');
+        }
+        result
     }
 }
