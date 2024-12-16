@@ -173,7 +173,7 @@ impl Grid {
         let mut result = "".to_string();
         for y in 0..self.height {
             for x in 0..self.width {
-                if (x == x0 && y == y0) {
+                if x == x0 && y == y0 {
                     result.push(c);
                 } else {
                     result.push(self.get((x, y)).unwrap());

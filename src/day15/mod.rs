@@ -10,7 +10,7 @@ fn task1(map: &mut Grid, moves: &str) -> usize {
         .unwrap();
     map.set_point(pos, '.');
     for c in moves.chars() {
-        let dir = direction(c);
+        let dir = Direction::from_char(c);
         let next_pos = map.point_in_direction(pos, dir).unwrap();
         let mut next_empty = next_pos;
         while map.get_point(next_empty).unwrap() == 'O' {
@@ -28,16 +28,6 @@ fn task1(map: &mut Grid, moves: &str) -> usize {
         }
     }
     calculate(map)
-}
-
-fn direction(c: char) -> Direction {
-    match c {
-        '<' => Direction::Left,
-        '^' => Direction::Up,
-        '>' => Direction::Right,
-        'v' => Direction::Down,
-        _ => todo!(),
-    }
 }
 
 fn calculate(map: &Grid) -> usize {
@@ -73,10 +63,10 @@ fn task2(map: &mut Grid, moves: &str) -> usize {
     println!("Map: \n{}\n\n", map.to_string());
 
     for c in moves.chars() {
-        let dir = direction(c);
+        let dir = Direction::from_char(c);
         let mut changes: Vec<(Point, char)> = vec![(pos, '.')];
         let next_pos = map.point_in_direction(pos, dir).unwrap();
-        if collectChanges(map, &mut changes, next_pos, dir) {
+        if collect_changes(map, &mut changes, next_pos, dir) {
             map.set_point(next_pos, '.');
             for (p, c) in changes {
                 map.set_point(p, c);
@@ -88,7 +78,7 @@ fn task2(map: &mut Grid, moves: &str) -> usize {
     calculate2(map)
 }
 
-fn collectChanges(
+fn collect_changes(
     map: &Grid,
     changes: &mut Vec<(Point, char)>,
     pos: Point,
@@ -101,7 +91,7 @@ fn collectChanges(
             let next_pos = map.point_in_direction(pos, dir).unwrap();
             changes.push((next_pos, '['));
             if dir == Direction::Left || dir == Direction::Right {
-                collectChanges(map, changes, next_pos, dir)
+                collect_changes(map, changes, next_pos, dir)
             } else {
                 // move other part of the box too
                 let right_pos = map.point_in_direction(pos, Direction::Right).unwrap();
@@ -109,23 +99,23 @@ fn collectChanges(
                 changes.insert(0, (right_pos, '.'));
                 let next_right_pos = map.point_in_direction(right_pos, dir).unwrap();
                 changes.push((next_right_pos, ']'));
-                collectChanges(map, changes, next_pos, dir)
-                    && collectChanges(map, changes, next_right_pos, dir)
+                collect_changes(map, changes, next_pos, dir)
+                    && collect_changes(map, changes, next_right_pos, dir)
             }
         }
         ']' => {
             let next_pos = map.point_in_direction(pos, dir).unwrap();
             changes.push((next_pos, ']'));
             if (dir == Direction::Left || dir == Direction::Right) {
-                collectChanges(map, changes, next_pos, dir)
+                collect_changes(map, changes, next_pos, dir)
             } else {
                 // move other part of the box too
                 let left_pos = map.point_in_direction(pos, Direction::Left).unwrap();
                 changes.insert(0, (left_pos, '.'));
                 let next_left_pos = map.point_in_direction(left_pos, dir).unwrap();
                 changes.push((next_left_pos, '['));
-                collectChanges(map, changes, next_pos, dir)
-                    && collectChanges(map, changes, next_left_pos, dir)
+                collect_changes(map, changes, next_pos, dir)
+                    && collect_changes(map, changes, next_left_pos, dir)
             }
         }
         c => {
