@@ -84,6 +84,17 @@ impl Grid {
         }
     }
 
+    pub fn from_array(array: &Vec<Vec<char>>) -> Grid {
+        let width = array[0].len();
+        let height = array.len();
+
+        Grid {
+            array: array.clone(),
+            width,
+            height,
+        }
+    }
+
     pub fn from_str(s: &str) -> Grid {
         let array: Vec<Vec<char>> = s
             .split("\n")
