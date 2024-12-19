@@ -71,7 +71,6 @@ fn run(state: &mut State, instructions: &Vec<i64>) -> Vec<i64> {
             }
             5 => {
                 // out
-                // print!("{},", combo(&state, arg) % 8);
                 result.push(combo(&state, arg) % 8);
                 state.i = state.i + 2;
             }
@@ -137,28 +136,17 @@ pub fn solve() -> String {
     let (rest, (mut state, instructions)): (&str, (State, Vec<i64>)) =
         configuration(&contents).unwrap();
 
-    println!("{:?} {:?}", state, instructions);
-
     assert_eq!(rest, "");
 
-    let mut state2 = state.clone();
-    state2.a = 0b110_101_110_010_001_001;
-    state2.a = 0b110_101_110_010_001;
-    state2.a = 236548287712877;
-    // state2.a = 0b101;
-    // state2.a = 0b100_100_100_100_100_100_100_100_100_100_100_100_100_100_100_100;
-    println!("*** {}", task1(&mut state2, &instructions));
     format!(
         "Task1: {}\nTask2: {}",
         task1(&mut state, &instructions),
-        // task1(&mut state2, &instructions),
         task2(&mut state, &instructions),
     )
 }
 
 fn task2(state: &State, instructions: &Vec<i64>) -> i64 {
     let mut solutions = go(state, instructions, 0, instructions);
-    solutions.iter().for_each(|s| println!("{:?}", s));
     solutions.sort();
     solutions[0]
 }

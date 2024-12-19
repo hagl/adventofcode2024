@@ -103,7 +103,8 @@ impl Tree {
         &self.branches[Tree::color_index(c)]
     }
 
-    fn mut_branch<'a>(self: &'a mut Tree, c: char) -> &'a mut Tree {
+    fn mut_branch(self: &mut Tree, c: char) -> &mut Tree {
+        // fn mut_branch<'a>(self: &'a mut Tree, c: char) -> &'a mut Tree {
         let o: &mut Option<Box<Tree>> = &mut self.branches[Tree::color_index(c)];
         if o.is_none() {
             let b = Box::new(Tree::new());
