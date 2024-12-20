@@ -27,7 +27,6 @@ fn tokens(configuration: &Configuration) -> i64 {
         if m1 % d == 0 && m2 % d == 0 {
             let a = m1 / d;
             let b = m2 / d;
-            // println!("a: {}, b: {}", a, b);
             if a >= 0 && b >= 0 {
                 a * 3 + b
             } else {

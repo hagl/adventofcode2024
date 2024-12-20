@@ -92,7 +92,6 @@ pub fn solve() -> String {
 
     let (rest, robots): (&str, Vec<Robot>) = robots(&contents).unwrap();
 
-    // println!("{:?}", robots);
     assert_eq!(rest, "");
 
     format!(

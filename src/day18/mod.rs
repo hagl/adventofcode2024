@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs, hash::Hash};
+use std::{collections::HashSet, fs};
 
 use crate::grid::{Direction, Grid, Point};
 
@@ -6,13 +6,38 @@ fn task1(positions: &Vec<(usize, usize)>, w: usize, h: usize, t: usize) -> usize
     run(positions, w, h, t).unwrap()
 }
 
-fn task2(positions: &Vec<(usize, usize)>, w: usize, h: usize, t: usize) -> String {
-    if let Some(ix) = (t..positions.len()).find(|ix| run(positions, w, h, *ix).is_none()) {
-        let brick = positions[ix - 1];
-        format!("{},{}", brick.0, brick.1)
+// f(lower) = false, f(upper) = true;
+fn binary_search<P>(lower: usize, upper: usize, f: P) -> usize
+where
+    P: Fn(usize) -> bool,
+{
+    let d = upper - lower;
+    if d == 1 {
+        upper
     } else {
-        "nof found".to_string()
+        let mid = lower + (d / 2);
+        if f(mid) {
+            binary_search(lower, mid, f)
+        } else {
+            binary_search(mid, upper, f)
+        }
     }
+}
+
+fn task2(positions: &Vec<(usize, usize)>, w: usize, h: usize, t: usize) -> String {
+    let ix = binary_search(t, positions.len() - 1, |ix| {
+        run(positions, w, h, ix).is_none()
+    });
+    let brick = positions[ix - 1];
+    format!("{},{}", brick.0, brick.1)
+    /*
+        if let Some(ix) = (t..positions.len()).find(|ix| run(positions, w, h, *ix).is_none()) {
+            let brick = positions[ix - 1];
+            format!("{},{}", brick.0, brick.1)
+        } else {
+            "nof found".to_string()
+        }
+    */
 }
 
 fn run(positions: &Vec<(usize, usize)>, w: usize, h: usize, t: usize) -> Option<usize> {

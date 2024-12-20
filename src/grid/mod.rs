@@ -44,6 +44,19 @@ pub struct Point {
     pub y: usize,
 }
 
+impl Point {
+    fn dist(n1: usize, n2: usize) -> usize {
+        if n1 < n2 {
+            n2 - n1
+        } else {
+            n1 - n2
+        }
+    }
+    pub fn manhatten_distance(self: &Point, other: &Point) -> usize {
+        Self::dist(self.x, other.x) + Self::dist(self.y, other.y)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Grid {
     array: Vec<Vec<char>>,
@@ -125,6 +138,24 @@ impl Grid {
     pub fn set_point(self: &mut Grid, Point { x, y }: Point, c: char) {
         let line = &mut self.array[y];
         line[x] = c;
+    }
+
+    fn add(u: usize, i: i32) -> Option<usize> {
+        if i.is_negative() {
+            u.checked_sub(i.wrapping_abs() as u32 as usize)
+        } else {
+            u.checked_add(i as usize)
+        }
+    }
+
+    pub fn move_point(self: &Grid, Point { x, y }: Point, dx: i32, dy: i32) -> Option<Point> {
+        let nx = Self::add(x, dx)?;
+        let ny = Self::add(y, dy)?;
+        if nx < self.width && ny < self.height {
+            Some(Point { x: nx, y: ny })
+        } else {
+            None
+        }
     }
 
     pub fn point_in_direction(self: &Grid, Point { x, y }: Point, dir: Direction) -> Option<Point> {
