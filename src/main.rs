@@ -18,6 +18,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 mod grid;
 
 #[derive(Parser, Debug)]
@@ -49,6 +50,7 @@ fn main() {
         println!("Day17\n{}\n", day17::solve());
         println!("Day18\n{}\n", day18::solve());
         println!("Day19\n{}\n", day19::solve());
+        println!("Day20\n{}\n", day20::solve());
     }
-    println!("Day20\n{}\n", day20::solve());
+    println!("Day21\n{}\n", day21::solve());
 }
