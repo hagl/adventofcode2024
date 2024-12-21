@@ -136,132 +136,19 @@ fn coord_number_paths((x1, y1): (usize, usize), (x2, y2): (usize, usize)) -> Vec
     result
 }
 
-fn task1(input: &Vec<String>) -> usize {
-    let mut n_paths: HashMap<(char, char), Vec<Vec<char>>> = HashMap::new();
-    let mut d_paths: HashMap<(char, char), Vec<Vec<char>>> = HashMap::new();
-
-    let mut numbers: Vec<char> = ('0'..='9').collect();
-    numbers.push('A');
-
-    for i in numbers.clone() {
-        for j in numbers.clone() {
-            n_paths.insert((i, j), number_paths(i, j));
-        }
-    }
-
-    let dirs: Vec<char> = vec!['^', '>', 'v', '<', 'A'];
-    for i in dirs.clone() {
-        for j in dirs.clone() {
-            d_paths.insert((i, j), dir_paths(i, j));
-        }
-    }
-
-    input
-        .iter()
-        .map(|s| {
-            let paths = paths0(
-                'A',
-                &mut s.chars().rev().collect(),
-                vec![],
-                &n_paths,
-                &d_paths,
-            );
-            // println!(
-            //     "{:?}",
-            //     paths
-            //         .iter()
-            //         .map(|cs| cs.iter().cloned().collect::<String>())
-            //         .collect::<Vec<String>>()
-            // );
-            let len = paths.iter().map(|cs| cs.len()).min().unwrap();
-            let num: usize = s
-                .chars()
-                .filter(|c| c.is_ascii_digit())
-                .collect::<String>()
-                .parse()
-                .unwrap();
-            println!("{}: {} {}", s, len, num);
-            len * num
-        })
-        .sum()
-}
-
-fn paths0(
-    last: char,
-    chars: &mut Vec<char>,
-    prefix: Vec<char>,
-    n_paths: &HashMap<(char, char), Vec<Vec<char>>>,
-    d_paths: &HashMap<(char, char), Vec<Vec<char>>>,
-) -> Vec<Vec<char>> {
-    if let Some(c) = chars.pop() {
-        // println!("{} {}", last, c);
-        let ps = n_paths.get(&(last, c)).unwrap();
-        ps.iter()
-            .flat_map(|p| {
-                let mut new_prefix = prefix.clone();
-                new_prefix.append(&mut p.clone());
-                paths0(c, &mut chars.clone(), new_prefix, n_paths, d_paths)
-            })
-            .collect()
-    } else {
-        // vec![prefix]
-
-        paths1(
-            'A',
-            &mut prefix.iter().cloned().rev().collect(),
-            vec![],
-            d_paths,
-            1,
-        )
-    }
-}
-
-fn paths1(
-    last: char,
-    chars: &mut Vec<char>,
-    prefix: Vec<char>,
-    d_paths: &HashMap<(char, char), Vec<Vec<char>>>,
-    level: usize,
-) -> Vec<Vec<char>> {
-    if let Some(c) = chars.pop() {
-        // println!("{} {}", last, c);
-        let ps = d_paths.get(&(last, c)).unwrap();
-        ps.iter()
-            .flat_map(|p| {
-                let mut new_prefix = prefix.clone();
-                new_prefix.append(&mut p.clone());
-                paths1(c, &mut chars.clone(), new_prefix, d_paths, level)
-            })
-            .collect()
-    } else {
-        if level == 0 {
-            vec![prefix]
-        } else {
-            paths1(
-                'A',
-                &mut prefix.iter().cloned().rev().collect(),
-                vec![],
-                d_paths,
-                level - 1,
-            )
-        }
-    }
-}
-
-fn paths2(
+fn paths(
     last: char,
     chars: &mut Vec<char>,
     prefix: Vec<char>,
     n_paths: &HashMap<(char, char), Vec<Vec<char>>>,
 ) -> Vec<Vec<char>> {
     if let Some(c) = chars.pop() {
-        // println!("{} {}", last, c);
         let ps = n_paths.get(&(last, c)).unwrap();
         ps.iter()
             .flat_map(|p| {
                 let mut new_prefix = prefix.clone();
                 new_prefix.append(&mut p.clone());
-                paths2(c, &mut chars.clone(), new_prefix, n_paths)
+                paths(c, &mut chars.clone(), new_prefix, n_paths)
             })
             .collect()
     } else {
@@ -269,7 +156,10 @@ fn paths2(
     }
 }
 
-fn task2(input: &Vec<String>) -> usize {
+fn get_path_caches() -> (
+    HashMap<(char, char), Vec<Vec<char>>>,
+    HashMap<(char, char), Vec<Vec<char>>>,
+) {
     let mut n_paths: HashMap<(char, char), Vec<Vec<char>>> = HashMap::new();
     let mut d_paths: HashMap<(char, char), Vec<Vec<char>>> = HashMap::new();
 
@@ -288,6 +178,13 @@ fn task2(input: &Vec<String>) -> usize {
             d_paths.insert((i, j), dir_paths(i, j));
         }
     }
+    (n_paths, d_paths)
+}
+
+fn task(input: &Vec<String>, iterations: usize) -> usize {
+    let (n_paths, d_paths) = get_path_caches();
+
+    let dirs: Vec<char> = vec!['^', '>', 'v', '<', 'A'];
 
     let mut d_costs: HashMap<(char, char), usize> = HashMap::new();
     for i in dirs.clone() {
@@ -296,7 +193,7 @@ fn task2(input: &Vec<String>) -> usize {
         }
     }
 
-    for _ in 0..25 {
+    for _ in 0..iterations {
         let previous_costs = d_costs.clone();
         for i in dirs.clone() {
             for j in dirs.clone() {
@@ -321,7 +218,7 @@ fn task2(input: &Vec<String>) -> usize {
     input
         .iter()
         .map(|s| {
-            let paths = paths2('A', &mut s.chars().rev().collect(), vec![], &n_paths);
+            let paths = paths('A', &mut s.chars().rev().collect(), vec![], &n_paths);
             let len = paths
                 .iter()
                 .map(|path| {
@@ -340,7 +237,6 @@ fn task2(input: &Vec<String>) -> usize {
                 .collect::<String>()
                 .parse()
                 .unwrap();
-            println!("{}: {} {}", s, len, num);
             len * num
         })
         .sum()
@@ -354,5 +250,6 @@ pub fn solve() -> String {
         .map(|s| s.to_string())
         .filter(|s| !s.is_empty())
         .collect();
-    format!("Task1: {},\nTask2: {}", task1(&array), task2(&array))
+
+    format!("Task1: {},\nTask2: {}", task(&array, 2), task(&array, 25))
 }
