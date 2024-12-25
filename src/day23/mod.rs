@@ -65,7 +65,7 @@ fn max_clique<'a>(
     connections: &HashSet<(&'a str, &'a str)>,
 ) -> Vec<&'a str> {
     if let Some(e) = list.pop() {
-        let mut c1 = max_clique(&mut list.iter().map(|i| *i).collect(), connections);
+        let c1 = max_clique(&mut list.iter().map(|i| *i).collect(), connections);
         let mut c2 = max_clique(
             &mut list
                 .iter()

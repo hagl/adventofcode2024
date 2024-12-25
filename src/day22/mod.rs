@@ -20,7 +20,7 @@ fn task2(input: &Vec<i64>) -> i64 {
     input.iter().for_each(|s| {
         let mut local_cache: HashSet<(i8, i8, i8, i8)> = HashSet::new();
         let prices: Vec<i8> = (0..2000)
-            .scan(*s, |acc, ix| {
+            .scan(*s, |acc, _ix| {
                 *acc = next_random(*acc);
                 Some(*acc)
             })
