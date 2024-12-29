@@ -53,12 +53,7 @@ impl<'a> Term<'a> {
     fn size(self: &Term<'a>) -> usize {
         match self {
             Term::Literal { name: _ } => 1,
-            Term::Expression {
-                a,
-                b,
-                op: _,
-                name: _,
-            } => a.size() + b.size(),
+            Term::Expression { a, b, .. } => a.size() + b.size(),
         }
     }
 
@@ -69,12 +64,7 @@ impl<'a> Term<'a> {
     fn level(self: &Term<'a>) -> usize {
         match self {
             Term::Literal { name } => Term::name_to_level(*name),
-            Term::Expression {
-                a,
-                b,
-                op: _,
-                name: _,
-            } => std::cmp::max(a.level(), b.level()),
+            Term::Expression { a, b, .. } => std::cmp::max(a.level(), b.level()),
         }
     }
 }
@@ -213,13 +203,7 @@ fn task2(_start_values: Vec<(&str, bool)>, rules_vec: &Vec<(&str, Gate)>) -> i64
         println!("{} ({})= {}", name, expr.size(), expr.to_string());
     }
 
-    if let Term::Expression {
-        a,
-        b,
-        op: _,
-        name: _,
-    } = resolve("z19", &rules, true)
-    {
+    if let Term::Expression { a, b, .. } = resolve("z19", &rules, true) {
         println!("Levels: {} {}", a.level(), b.level());
     };
 

@@ -65,10 +65,7 @@ fn task1(array: &Vec<DiskSection>) -> i64 {
                     } else {
                         end = end - 1;
                         match array[end] {
-                            DiskSection::Free {
-                                start: _,
-                                length: _,
-                            } => {}
+                            DiskSection::Free { .. } => {}
                             DiskSection::File {
                                 id,
                                 start: _,
