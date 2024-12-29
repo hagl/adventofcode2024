@@ -28,20 +28,20 @@ impl Display for Operation {
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug)]
-pub enum Term<'a> {
+pub enum Term {
     Literal {
-        name: &'a str,
+        name: String,
     },
     Expression {
-        a: Box<Term<'a>>,
-        b: Box<Term<'a>>,
+        a: Box<Term>,
+        b: Box<Term>,
         op: Operation,
-        name: &'a str,
+        name: String,
     },
 }
 
-impl<'a> Term<'a> {
-    fn to_string(self: &Term<'a>) -> String {
+impl Term {
+    fn to_string(self: &Term) -> String {
         match self {
             Term::Literal { name } => name.to_string(),
             Term::Expression { a, b, op, name } => {
@@ -50,7 +50,7 @@ impl<'a> Term<'a> {
         }
     }
 
-    fn size(self: &Term<'a>) -> usize {
+    fn size(self: &Term) -> usize {
         match self {
             Term::Literal { name: _ } => 1,
             Term::Expression { a, b, .. } => a.size() + b.size(),
@@ -61,55 +61,55 @@ impl<'a> Term<'a> {
         t[1..].parse().unwrap()
     }
 
-    fn level(self: &Term<'a>) -> usize {
+    fn level(self: &Term) -> usize {
         match self {
-            Term::Literal { name } => Term::name_to_level(*name),
+            Term::Literal { name } => Term::name_to_level(name),
             Term::Expression { a, b, .. } => std::cmp::max(a.level(), b.level()),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct Gate<'a> {
+struct Gate {
     op: Operation,
-    a: &'a str,
-    b: &'a str,
+    a: String,
+    b: String,
 }
 
-fn run<'a>(values: &mut HashMap<&'a str, bool>, rules: &HashMap<&'a str, Gate>) {
-    let mut remaining: Vec<&str> = rules.keys().map(|e| *e).collect();
+fn run(values: &mut HashMap<String, bool>, rules: &HashMap<String, Gate>) {
+    let mut remaining: Vec<&str> = rules.keys().map(|s| s.as_str()).collect();
     while !remaining.is_empty() {
         let mut next_remaining: Vec<&str> = vec![];
         for s in remaining {
             let g = rules.get(s).unwrap();
             if let Some(res) = apply(g, values) {
-                values.insert(s, res);
+                values.insert(s.to_string(), res);
             } else {
-                next_remaining.push(s);
+                next_remaining.push(&s);
             }
         }
         remaining = next_remaining;
     }
 }
 
-fn task1(start_values: &Vec<(&str, bool)>, rules_vec: &Vec<(&str, Gate)>) -> i64 {
-    let mut values: HashMap<&str, bool> = HashMap::new();
+fn task1(start_values: &Vec<(String, bool)>, rules_vec: &Vec<(String, Gate)>) -> i64 {
+    let mut values: HashMap<String, bool> = HashMap::new();
     for (s, v) in start_values.clone() {
         values.insert(s, v);
     }
 
-    let mut rules: HashMap<&str, Gate> = HashMap::new();
+    let mut rules: HashMap<String, Gate> = HashMap::new();
     for (s, v) in rules_vec {
-        rules.insert(s, v.clone());
+        rules.insert(s.to_string(), v.clone());
     }
 
-    let mut remaining: Vec<&str> = rules.keys().map(|e| *e).collect();
+    let mut remaining: Vec<&str> = rules.keys().map(|e| e.as_str()).collect();
     while !remaining.is_empty() {
         let mut next_remaining: Vec<&str> = vec![];
         for s in remaining {
             let g = rules.get(s).unwrap();
             if let Some(res) = apply(g, &mut values) {
-                values.insert(s, res);
+                values.insert(s.to_string(), res);
             } else {
                 next_remaining.push(s);
             }
@@ -127,7 +127,7 @@ fn task1(start_values: &Vec<(&str, bool)>, rules_vec: &Vec<(&str, Gate)>) -> i64
         })
 }
 
-fn printBinary(values: &HashMap<&str, bool>, prefix: &str) {
+fn print_binary(values: &HashMap<String, bool>, prefix: &str) {
     let res: String = values
         .keys()
         .filter(|s| s.starts_with(prefix))
@@ -138,63 +138,49 @@ fn printBinary(values: &HashMap<&str, bool>, prefix: &str) {
     println!("{}", res);
 }
 
-// fn swap_rules<'a>(n1: &'a str, n2: &'a str, rules: &'a mut HashMap<&'a str, Gate>) {
-//     let rule_1 = rules.get(n1).unwrap().clone();
-//     let rule_2 = rules.get(n2).unwrap().clone();
-//     rules.insert(n1, rule_2);
-//     rules.insert(n2, rule_1);
-// }
+fn swap_rules(n1: &str, n2: &str, rules: &mut HashMap<String, Gate>) {
+    let rule_1 = rules.get(n1).unwrap().clone();
+    let rule_2 = rules.get(n2).unwrap().clone();
+    rules.insert(n1.to_string(), rule_2);
+    rules.insert(n2.to_string(), rule_1);
+}
 
-fn task2(_start_values: Vec<(&str, bool)>, rules_vec: &Vec<(&str, Gate)>) -> i64 {
+fn task2(_start_values: Vec<(String, bool)>, rules_vec: &Vec<(String, Gate)>) -> i64 {
     let mut xs: Vec<String> = vec![];
     let mut ys: Vec<String> = vec![];
 
-    let mut rules: HashMap<&str, Gate> = HashMap::new();
+    let mut rules: HashMap<String, Gate> = HashMap::new();
     for (s, v) in rules_vec {
-        rules.insert(s, v.clone());
+        rules.insert(s.clone(), v.clone());
     }
 
     // cqm,mps,vcv,vjv,vwp,z13,z19,z25
     // swap vcv , z13
-    let rule_vcv = rules.get("vcv").unwrap().clone();
-    let rule_z13 = rules.get("z13").unwrap().clone();
-    rules.insert("vcv", rule_z13);
-    rules.insert("z13", rule_vcv);
+    swap_rules("vcv", "z13", &mut rules);
     // swap vwp, z19
-    let rule_vwp = rules.get("vwp").unwrap().clone();
-    let rule_z19 = rules.get("z19").unwrap().clone();
-    rules.insert("vwp", rule_z19);
-    rules.insert("z19", rule_vwp);
+    swap_rules("vwp", "z19", &mut rules);
     // swap mps, z25
-    let rule_mps = rules.get("mps").unwrap().clone();
-    let rule_z25 = rules.get("z25").unwrap().clone();
-    rules.insert("mps", rule_z25);
-    rules.insert("z25", rule_mps);
-
-    // // swap qnw, z33
+    swap_rules("mps", "z25", &mut rules);
     // swap cqm, vjv
-    let rule_cqm = rules.get("cqm").unwrap().clone();
-    let rule_vjv = rules.get("vjv").unwrap().clone();
-    rules.insert("cqm", rule_vjv);
-    rules.insert("vjv", rule_cqm);
+    swap_rules("cqm", "vjv", &mut rules);
 
     for i in 0..=45 {
         xs.push(format!("x{:02}", i));
         ys.push(format!("y{:02}", i));
     }
     for i in 0..=44 {
-        let mut values: HashMap<&str, bool> = HashMap::new();
+        let mut values: HashMap<String, bool> = HashMap::new();
         for j in 0..=45 {
-            values.insert(&xs[j], j == i);
-            // values.insert(&xs[j], false);
-            values.insert(&ys[j], j == i);
-            // values.insert(&ys[j], false);
+            values.insert(xs[j].clone(), j == i);
+            // values.insert(xs[j].clone(), false);
+            values.insert(ys[j].clone(), j == i);
+            // values.insert(ys[j].clone(), false);
         }
         run(&mut values, &rules);
         println!("---- {}", i);
-        printBinary(&values, "x");
-        printBinary(&values, "y");
-        printBinary(&values, "z");
+        print_binary(&values, "x");
+        print_binary(&values, "y");
+        print_binary(&values, "z");
     }
 
     for i in 0..=45 {
@@ -210,9 +196,11 @@ fn task2(_start_values: Vec<(&str, bool)>, rules_vec: &Vec<(&str, Gate)>) -> i64
     0
 }
 
-fn resolve<'a>(name: &'a str, rules: &'a HashMap<&'a str, Gate>, top_level: bool) -> Term<'a> {
+fn resolve(name: &str, rules: &HashMap<String, Gate>, top_level: bool) -> Term {
     if name.starts_with("x") || name.starts_with("y") || !top_level && name.starts_with("z") {
-        Term::Literal { name }
+        Term::Literal {
+            name: name.to_string(),
+        }
     } else {
         if let Some(Gate { a, b, op }) = rules.get(name) {
             let at = resolve(a, rules, false);
@@ -222,25 +210,27 @@ fn resolve<'a>(name: &'a str, rules: &'a HashMap<&'a str, Gate>, top_level: bool
                     a: Box::new(at),
                     b: Box::new(bt),
                     op: op.clone(),
-                    name,
+                    name: name.to_string(),
                 }
             } else {
                 Term::Expression {
                     a: Box::new(bt),
                     b: Box::new(at),
                     op: op.clone(),
-                    name,
+                    name: name.to_string(),
                 }
             }
         } else {
-            Term::Literal { name }
+            Term::Literal {
+                name: name.to_string(),
+            }
         }
     }
 }
 
-fn apply(g: &Gate, values: &mut HashMap<&str, bool>) -> Option<bool> {
-    let op1 = values.get(g.a)?;
-    let op2 = values.get(g.b)?;
+fn apply(g: &Gate, values: &mut HashMap<String, bool>) -> Option<bool> {
+    let op1 = values.get(&g.a)?;
+    let op2 = values.get(&g.b)?;
     match g.op {
         Operation::AND => Some(*op1 && *op2),
         Operation::OR => Some(*op1 || *op2),
@@ -248,29 +238,14 @@ fn apply(g: &Gate, values: &mut HashMap<&str, bool>) -> Option<bool> {
     }
 }
 
-/*
-
-x00: 1
-x01: 1
-x02: 1
-y00: 0
-y01: 1
-y02: 0
-
-x00 AND y00 -> z00
-x01 XOR y01 -> z01
-x02 OR y02 -> z02
-
-*/
-
-fn startValue(input: &str) -> IResult<&str, (&str, bool)> {
+fn start_value(input: &str) -> IResult<&str, (String, bool)> {
     let (input, (name, _, value, _)) = tuple((
         nom::character::complete::alphanumeric1,
         tag(": "),
         nom::character::complete::i64,
         newline,
     ))(input)?;
-    Ok((input, (name, value == 1)))
+    Ok((input, (name.to_string(), value == 1)))
 }
 
 fn operation(input: &str) -> IResult<&str, Operation> {
@@ -281,7 +256,7 @@ fn operation(input: &str) -> IResult<&str, Operation> {
     ))(input)
 }
 
-fn rule(input: &str) -> IResult<&str, (&str, Gate)> {
+fn rule(input: &str) -> IResult<&str, (String, Gate)> {
     let (input, (a, _, op, _, b, _, name, _)) = tuple((
         nom::character::complete::alphanumeric1,
         tag(" "),
@@ -292,11 +267,21 @@ fn rule(input: &str) -> IResult<&str, (&str, Gate)> {
         nom::character::complete::alphanumeric1,
         newline,
     ))(input)?;
-    Ok((input, (name, Gate { a, b, op })))
+    Ok((
+        input,
+        (
+            name.to_string(),
+            Gate {
+                a: a.to_string(),
+                b: b.to_string(),
+                op,
+            },
+        ),
+    ))
 }
 
-fn configurations(input: &str) -> IResult<&str, (Vec<(&str, bool)>, Vec<(&str, Gate)>)> {
-    let (input, (start, _, rules)) = tuple((many1(startValue), newline, many1(rule)))(input)?;
+fn configurations(input: &str) -> IResult<&str, (Vec<(String, bool)>, Vec<(String, Gate)>)> {
+    let (input, (start, _, rules)) = tuple((many1(start_value), newline, many1(rule)))(input)?;
     Ok((input, (start, rules)))
 }
 
@@ -304,7 +289,7 @@ pub fn solve() -> String {
     let contents = fs::read_to_string("data/day24/input.txt").unwrap();
     // let contents = fs::read_to_string("data/day24/ex.txt").unwrap();
 
-    let (rest, (start_values, rules)): (&str, (Vec<(&str, bool)>, Vec<(&str, Gate)>)) =
+    let (rest, (start_values, rules)): (&str, (Vec<(String, bool)>, Vec<(String, Gate)>)) =
         configurations(&contents).unwrap();
 
     // println!("{:?}\n\n{:?}", start_values, rules);
